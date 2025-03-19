@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="profile">
+        <h2>Профиль пользователя</h2>
+        <div class="profile-info">
+            <label for="username">Логин:</label>
+            <input type="text" id="username" value="" disabled>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="">
+            
+            <label for="bio">О себе:</label>
+            <textarea id="bio"></textarea>
+            
+            <button id="saveProfile" class="btn">Сохранить</button>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const username = document.getElementById("username");
+            const email = document.getElementById("email");
+            const bio = document.getElementById("bio");
+            const saveButton = document.getElementById("saveProfile");
+            
+            // Загрузка данных из localStorage
+            username.value = localStorage.getItem("username") || "Пользователь";
+            email.value = localStorage.getItem("email") || "";
+            bio.value = localStorage.getItem("bio") || "";
+            
+            // Сохранение данных
+            saveButton.addEventListener("click", function() {
+                localStorage.setItem("email", email.value);
+                localStorage.setItem("bio", bio.value);
+                alert("Данные профиля сохранены!");
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Настройки - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="settings">
+        <h2>Настройки аккаунта</h2>
+        
+        <label for="darkMode">Тёмная тема:</label>
+        <input type="checkbox" id="darkMode">
+        
+        <label for="notifications">Уведомления:</label>
+        <input type="checkbox" id="notifications">
+        
+        <button id="saveSettings" class="btn">Сохранить настройки</button>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const darkModeToggle = document.getElementById("darkMode");
+            const notificationsToggle = document.getElementById("notifications");
+            const saveButton = document.getElementById("saveSettings");
+            
+            // Загрузка настроек из localStorage
+            darkModeToggle.checked = localStorage.getItem("darkMode") === "true";
+            notificationsToggle.checked = localStorage.getItem("notifications") === "true";
+            
+            if (darkModeToggle.checked) {
+                document.body.classList.add("dark-mode");
+            }
+            
+            // Сохранение настроек
+            saveButton.addEventListener("click", function() {
+                localStorage.setItem("darkMode", darkModeToggle.checked);
+                localStorage.setItem("notifications", notificationsToggle.checked);
+                
+                if (darkModeToggle.checked) {
+                    document.body.classList.add("dark-mode");
+                } else {
+                    document.body.classList.remove("dark-mode");
+                }
+                
+                alert("Настройки сохранены!");
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="login">
+        <h2>Вход в аккаунт</h2>
+        <form id="loginForm">
+            <label for="username">Логин:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit" class="btn">Войти</button>
+        </form>
+        <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрируйтесь</a></p>
+    </section>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const storedUsername = localStorage.getItem("username");
+            const storedPassword = localStorage.getItem("password");
+            
+            if (username === storedUsername && password === storedPassword) {
+                alert("Вход выполнен успешно!");
+                window.location.href = "{{ url_for('profile') }}";
+            } else {
+                alert("Неверный логин или пароль.");
+            }
+        });
+    </script>
+{% endblock %}

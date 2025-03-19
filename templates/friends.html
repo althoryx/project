@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Друзья - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="friends">
+        <h2>Список друзей</h2>
+        <ul id="friends-list">
+            <p>Загрузка друзей...</p>
+        </ul>
+        <input type="text" id="friend-name" placeholder="Введите имя друга">
+        <button id="addFriend" class="btn">Добавить</button>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const friendsList = document.getElementById("friends-list");
+            const friendInput = document.getElementById("friend-name");
+            const addFriendButton = document.getElementById("addFriend");
+
+            function loadFriends() {
+                const friends = JSON.parse(localStorage.getItem("friends")) || [];
+                friendsList.innerHTML = "";
+                friends.forEach(friend => {
+                    let li = document.createElement("li");
+                    li.textContent = friend;
+                    friendsList.appendChild(li);
+                });
+            }
+
+            addFriendButton.addEventListener("click", function() {
+                let friendName = friendInput.value.trim();
+                if (friendName) {
+                    let friends = JSON.parse(localStorage.getItem("friends")) || [];
+                    friends.push(friendName);
+                    localStorage.setItem("friends", JSON.stringify(friends));
+                    friendInput.value = "";
+                    loadFriends();
+                }
+            });
+
+            loadFriends();
+        });
+    </script>
+{% endblock %}

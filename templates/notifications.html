@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск пользователей - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="search">
+        <h2>Поиск пользователей</h2>
+        <input type="text" id="searchQuery" placeholder="Введите имя пользователя">
+        <button id="searchButton" class="btn">Искать</button>
+        <ul id="searchResults"></ul>
+    </section>
+
+    <script>
+        document.getElementById("searchButton").addEventListener("click", function() {
+            const query = document.getElementById("searchQuery").value.toLowerCase();
+            const resultsContainer = document.getElementById("searchResults");
+            resultsContainer.innerHTML = "Идет поиск...";
+            
+            fetch("/api/users?query=" + query)
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = "";
+                    if (data.length > 0) {
+                        data.forEach(user => {
+                            let li = document.createElement("li");
+                            li.textContent = user.username;
+                            resultsContainer.appendChild(li);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = "Пользователь не найден";
+                    }
+                })
+                .catch(error => {
+                    resultsContainer.innerHTML = "Ошибка при поиске пользователей";
+                });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Лента новостей - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="feed">
+        <h2>Лента новостей</h2>
+        <div id="posts-container">
+            <p>Загрузка новостей...</p>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const postsContainer = document.getElementById("posts-container");
+            
+            fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
+                .then(response => response.json())
+                .then(data => {
+                    postsContainer.innerHTML = "";
+                    data.forEach(post => {
+                        let postElement = document.createElement("div");
+                        postElement.classList.add("post");
+                        postElement.innerHTML = `
+                            <h3>${post.title}</h3>
+                            <p>${post.body}</p>
+                        `;
+                        postsContainer.appendChild(postElement);
+                    });
+                })
+                .catch(error => {
+                    postsContainer.innerHTML = "Ошибка загрузки новостей.";
+                });
+        });
+    </script>
+{% endblock %}
