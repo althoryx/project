@@ -3,34 +3,161 @@
 {% block title %}Лента новостей - ВОнлайне{% endblock %}
 
 {% block content %}
-    <section class="feed">
-        <h2>Лента новостей</h2>
-        <div id="posts-container">
-            <p>Загрузка новостей...</p>
-        </div>
-    </section>
+<section class="new-post">
+    <h3>Что у вас нового?</h3>
+    <textarea id="postContent" placeholder="Напишите что-нибудь..."></textarea>
+    <button id="postButton" class="btn">Опубликовать</button>
+</section>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const postsContainer = document.getElementById("posts-container");
-            
-            fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
+<section class="feed">
+    <h3>Новости</h3>
+    {% for post in posts %}
+        <div class="post" id="post-{{ post.id }}">
+            <div class="post-header">
+                <img src="{{ post.user.avatar_url }}" class="post-avatar">
+                <strong>{{ post.user.username }}</strong>
+                <span class="post-time">{{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                <button class="delete-post" data-id="{{ post.id }}">🗑 Удалить</button>
+            </div>
+            <p>{{ post.content }}</p>
+
+            <div class="post-actions">
+                <button class="like-post" data-id="{{ post.id }}">❤️ {{ post.likes }}</button>
+                <button class="comment-toggle" data-id="{{ post.id }}">💬 Комментарии</button>
+            </div>
+
+            <div class="comment-section hidden" id="comment-section-{{ post.id }}">
+                <div class="comments-list">
+                    {% for comment in post.comments %}
+                        <div class="comment" id="comment-{{ comment.id }}">
+                            <img src="{{ comment.user.avatar_url }}" class="comment-avatar">
+                            <div class="comment-content">
+                                <strong>{{ comment.user.username }}</strong>
+                                <span class="comment-time">{{ comment.timestamp.strftime('%H:%M %d.%m.%Y') }}</span>
+                                <p class="comment-text">{{ comment.content }}</p>
+                            </div>
+                            {% if comment.user_id == user.id %}
+                                <button class="delete-comment" data-id="{{ comment.id }}">🗑</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="comment-input-section">
+                    <input type="text" class="comment-input" data-id="{{ post.id }}" placeholder="Написать комментарий...">
+                    <button class="comment-btn" data-id="{{ post.id }}">Отправить</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Открытие/скрытие комментариев
+        document.querySelectorAll(".comment-toggle").forEach(button => {
+            button.addEventListener("click", function() {
+                const postId = this.getAttribute("data-id");
+                const commentSection = document.getElementById(`comment-section-${postId}`);
+                commentSection.classList.toggle("hidden");
+            });
+        });
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Отправка комментария
+        document.querySelectorAll(".comment-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                const postId = this.getAttribute("data-id");
+                const commentInput = document.querySelector(`.comment-input[data-id='${postId}']`);
+                const commentText = commentInput.value.trim();
+
+                if (!commentText) {
+                    alert("Комментарий не может быть пустым!");
+                    return;
+                }
+
+                fetch(`/api/comment_post/${postId}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: commentText })
+                })
                 .then(response => response.json())
                 .then(data => {
-                    postsContainer.innerHTML = "";
-                    data.forEach(post => {
-                        let postElement = document.createElement("div");
-                        postElement.classList.add("post");
-                        postElement.innerHTML = `
-                            <h3>${post.title}</h3>
-                            <p>${post.body}</p>
-                        `;
-                        postsContainer.appendChild(postElement);
-                    });
-                })
-                .catch(error => {
-                    postsContainer.innerHTML = "Ошибка загрузки новостей.";
+                    if (data.message) {
+                        location.reload();  // Обновляем страницу после комментария
+                    } else {
+                        alert("Ошибка при отправке комментария: " + (data.error || "Неизвестная ошибка"));
+                    }
                 });
+            });
         });
-    </script>
+
+        // Лайк поста
+        document.querySelectorAll(".like-post").forEach(button => {
+            button.addEventListener("click", function() {
+                const postId = this.getAttribute("data-id");
+
+                fetch(`/api/like_post/${postId}`, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        this.textContent = `❤️ ${data.likes}`;
+                    } else {
+                        alert("Ошибка: " + (data.error || "Неизвестная ошибка"));
+                    }
+                });
+            });
+        });
+
+        // Удаление поста
+        document.querySelectorAll(".delete-post").forEach(button => {
+            button.addEventListener("click", function() {
+                if (!confirm("Удалить этот пост?")) return;
+
+                fetch(`/api/delete_post/${this.dataset.id}`, { method: "DELETE" })
+                .then(() => location.reload());
+            });
+        });
+
+        // Создание поста
+        document.getElementById("postButton").addEventListener("click", function() {
+            const content = document.getElementById("postContent").value.trim();
+            if (!content) {
+                alert("Пост не может быть пустым!");
+                return;
+            }
+
+            fetch("/api/create_post", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    location.reload();
+                } else {
+                    alert("Ошибка при создании поста: " + (data.error || "Неизвестная ошибка"));
+                }
+            });
+        });
+        // Удаление комментария
+        document.querySelectorAll(".delete-comment").forEach(button => {
+            button.addEventListener("click", function() {
+                const commentId = this.getAttribute("data-id");
+
+                fetch(`/api/delete_comment/${commentId}`, { method: "DELETE" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        document.getElementById(`comment-${commentId}`).remove();
+                    } else {
+                        alert("Ошибка удаления: " + (data.error || "Неизвестная ошибка"));
+                    }
+                });
+            });
+        });
+    });
+</script>
 {% endblock %}

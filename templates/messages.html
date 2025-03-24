@@ -3,45 +3,133 @@
 {% block title %}Сообщения - ВОнлайне{% endblock %}
 
 {% block content %}
-    <section class="messages">
-        <h2>Чаты</h2>
-        <div id="chat-container">
-            <ul id="chat-list"></ul>
-        </div>
-        <div class="message-input">
-            <input type="text" id="message" placeholder="Введите сообщение...">
-            <button id="sendMessage" class="btn">Отправить</button>
-        </div>
-    </section>
+<section class="messages">
+    <h2>Сообщения</h2>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const chatList = document.getElementById("chat-list");
-            const messageInput = document.getElementById("message");
-            const sendMessageButton = document.getElementById("sendMessage");
-            
-            function loadMessages() {
-                const messages = JSON.parse(localStorage.getItem("messages")) || [];
-                chatList.innerHTML = "";
-                messages.forEach(msg => {
-                    let li = document.createElement("li");
-                    li.textContent = msg;
-                    chatList.appendChild(li);
+    <div class="chat-menu">
+        <button id="chat-dropdown-btn">Выберите чат ▼</button>
+        <ul id="chat-users" class="chat-dropdown hidden"></ul>
+    </div>
+
+    <div class="chat-container">
+        <main class="chat-window">
+            <div id="chat-header">Выберите чат</div>
+            <div id="messages-box"></div>
+            <div class="message-input">
+                <input type="text" id="message-input" placeholder="Введите сообщение...">
+                <button id="send-message-btn" class="btn">Отправить</button>
+            </div>
+        </main>
+    </div>
+</section>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    const chatUsers = document.getElementById("chat-users");
+    const messagesBox = document.getElementById("messages-box");
+    const messageInput = document.getElementById("message-input");
+    const sendMessageBtn = document.getElementById("send-message-btn");
+    const chatHeader = document.getElementById("chat-header");
+    const messageInputContainer = document.querySelector(".message-input");
+    const chatDropdownBtn = document.getElementById("chat-dropdown-btn");
+
+    let currentChatUser = null;
+
+    function updateUI() {
+        if (currentChatUser) {
+            messageInputContainer.style.display = "flex";
+        } else {
+            messageInputContainer.style.display = "none";
+            messagesBox.innerHTML = "";
+            chatHeader.innerHTML = "Выберите чат";
+        }
+    }
+
+    function loadChats() {
+        fetch("/api/friends")
+            .then(response => response.json())
+            .then(users => {
+                chatUsers.innerHTML = "";
+                users.forEach(user => {
+                    let chatItem = document.createElement("li");
+                    let avatarUrl = user.avatar_url ? user.avatar_url : "/static/img/default_avatar.png";
+                    chatItem.innerHTML = `<img src="${avatarUrl}" class="avatar"> ${user.name}`;
+                    chatItem.dataset.userId = user.id;
+                    chatItem.classList.add("chat-item");
+                    chatItem.addEventListener("click", () => openChat(user.id, user.name, avatarUrl));
+                    chatUsers.appendChild(chatItem);
                 });
-            }
-            
-            sendMessageButton.addEventListener("click", function() {
-                let message = messageInput.value.trim();
-                if (message) {
-                    let messages = JSON.parse(localStorage.getItem("messages")) || [];
-                    messages.push(message);
-                    localStorage.setItem("messages", JSON.stringify(messages));
-                    messageInput.value = "";
-                    loadMessages();
-                }
             });
-            
-            loadMessages();
-        });
-    </script>
+    }
+
+    function openChat(userId, username, avatarUrl) {
+        currentChatUser = userId;
+        chatHeader.innerHTML = `<img src="${avatarUrl}" class="avatar"> Чат с ${username}`;
+        messagesBox.innerHTML = "";
+        messageInputContainer.style.display = "flex";
+        chatDropdownBtn.textContent = `Чат с ${username} ▼`;
+
+        fetch(`/api/get_messages/${userId}`)
+            .then(response => response.json())
+            .then(messages => {
+                messages.forEach(msg => addMessage(msg.sender, msg.content, msg.timestamp, msg.sender_id));
+            });
+
+        chatUsers.classList.remove("show");
+    }
+
+    function addMessage(sender, content, timestamp, senderId) {
+        let msgDiv = document.createElement("div");
+        let isOwn = senderId == window.currentUserId;
+
+        msgDiv.classList.add("message", isOwn ? "own-message" : "incoming-message");
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${content} <small>${timestamp}</small>`;
+
+        messagesBox.appendChild(msgDiv);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+
+    sendMessageBtn.addEventListener("click", function () {
+        if (!currentChatUser) return alert("Выберите чат перед отправкой сообщения!");
+
+        const messageText = messageInput.value.trim();
+        if (messageText) {
+            socket.emit("send_message", { receiver_id: currentChatUser, content: messageText });
+
+            addMessage("Вы", messageText, new Date().toLocaleTimeString(), window.currentUserId);
+            messageInput.value = "";
+        }
+    });
+
+    socket.on("new_message", function (data) {
+        if (data.receiver_id == window.currentUserId || data.sender_id == window.currentUserId) {
+            addMessage(
+                data.sender_id == window.currentUserId ? "Вы" : data.sender, 
+                data.content, 
+                data.timestamp, 
+                data.sender_id
+            );
+        }
+    });
+
+    chatDropdownBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        chatUsers.classList.toggle("show");
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!chatDropdownBtn.contains(event.target) && !chatUsers.contains(event.target)) {
+            chatUsers.classList.remove("show");
+        }
+    });
+
+    updateUI();
+    loadChats();
+});
+
+</script>
 {% endblock %}

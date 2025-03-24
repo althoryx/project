@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя - ВОнлайне{% endblock %}
+
+{% block content %}
+    <section class="profile">
+        <div class="profile-header">
+            <div class="avatar-container">
+                <form id="avatarForm" enctype="multipart/form-data">
+                    <div class="avatar-wrapper">
+                        <label for="avatarInput">
+                            <img id="avatarImage" src="{{ user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Аватар" class="profile-avatar">
+                            {% if user.id == current_user.id %}
+                                <span class="avatar-text">Изменить</span>
+                            {% endif %}
+                        </label>
+                        {% if user.id == current_user.id %}
+                            <button id="deleteAvatar" class="delete-avatar-btn">Удалить</button>
+                        {% endif %}
+                    </div>
+                    <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
+                </form>
+            </div>
+{% if user.is_private and user.id != current_user.id %}
+<p>Этот профиль скрыт настройками приватности.</p>
+{% else %}
+            <div class="profile-main">
+                <h2 id="profile-username">{{ user.username }}</h2>
+                <p><strong>О себе:</strong> <span id="bioText">{{ user.bio or 'Информация отсутствует' }}</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="friends-block">
+        <h3>Друзья <a href="#" id="showAllFriends" class="show-all-friends">Показать всех</a></h3>
+        <div id="friends-list" class="friends-grid">
+            <p>Загрузка...</p>
+        </div>
+    </section>
+
+    <section class="feed">
+        <h3>Публикации</h3>
+        {% for post in posts %}
+            <div class="post" id="post-{{ post.id }}">
+                <div class="post-header">
+                    <img src="{{ post.user.avatar_url }}" class="post-avatar">
+                    <strong>{{ post.user.username }}</strong>
+                    <span class="post-time">{{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    {% if post.user_id == current_user.id %}
+                        <button class="delete-post" data-id="{{ post.id }}">🗑 Удалить</button>
+                    {% endif %}
+                </div>
+                <p>{{ post.content }}</p>
+                
+                <div class="post-actions">
+                    <button class="like-post" data-id="{{ post.id }}">❤️ {{ post.likes }}</button>
+                    <button class="comment-toggle" data-id="{{ post.id }}">💬 Комментарии</button>
+                </div>
+                
+                <div class="comment-section hidden" id="comment-section-{{ post.id }}">
+                    <div class="comments-list">
+                        {% for comment in post.comments %}
+                            <div class="comment" id="comment-{{ comment.id }}">
+                                <img src="{{ comment.user.avatar_url }}" class="comment-avatar">
+                                <div class="comment-content">
+                                    <strong>{{ comment.user.username }}</strong>
+                                    <span class="comment-time">{{ comment.timestamp.strftime('%H:%M %d.%m.%Y') }}</span>
+                                    <p class="comment-text">{{ comment.content }}</p>
+                                </div>
+                                {% if comment.user_id == current_user.id %}
+                                    <button class="delete-comment" data-id="{{ comment.id }}">🗑</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="comment-input-section">
+                        <input type="text" class="comment-input" data-id="{{ post.id }}" placeholder="Написать комментарий...">
+                        <button class="comment-btn" data-id="{{ post.id }}">Отправить</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+{% endif %}
+    <!-- Модальное окно для списка друзей -->
+    <div id="friendsModal" class="friends-modal">
+        <div class="friends-modal-content">
+            <span class="close">&times;</span>
+            <h3>Список друзей</h3>
+            <div id="all-friends-list" class="friends-modal-list">
+                <p>Загрузка...</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const profileUserId = "{{ user.id | default('') }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/view_profile.js') }}"></script>    
+{% endblock %}

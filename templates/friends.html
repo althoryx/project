@@ -3,43 +3,138 @@
 {% block title %}Друзья - ВОнлайне{% endblock %}
 
 {% block content %}
-    <section class="friends">
-        <h2>Список друзей</h2>
-        <ul id="friends-list">
-            <p>Загрузка друзей...</p>
-        </ul>
-        <input type="text" id="friend-name" placeholder="Введите имя друга">
-        <button id="addFriend" class="btn">Добавить</button>
-    </section>
+<div id="message-box" class="message-box"></div>
+<h2>Мои друзья</h2>
+<ul id="friends-list" class="friend-list">
+    <p>Загрузка...</p>
+</ul>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const friendsList = document.getElementById("friends-list");
-            const friendInput = document.getElementById("friend-name");
-            const addFriendButton = document.getElementById("addFriend");
+<h3>Заявки в друзья</h3>
+<ul id="friend-requests" class="request-list"></ul>
 
-            function loadFriends() {
-                const friends = JSON.parse(localStorage.getItem("friends")) || [];
+<input type="text" id="friend-name" placeholder="Введите имя друга">
+<button id="addFriend" class="btn">Добавить</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const friendsList = document.getElementById("friends-list");
+    const friendRequestsList = document.getElementById("friend-requests");
+    const friendInput = document.getElementById("friend-name");
+    const addFriendButton = document.getElementById("addFriend");
+
+    function loadFriends() {
+        fetch("/api/friends")
+            .then(response => response.json())
+            .then(friends => {
                 friendsList.innerHTML = "";
                 friends.forEach(friend => {
                     let li = document.createElement("li");
-                    li.textContent = friend;
+                    li.classList.add("friend-item");
+                    
+                    let avatar = document.createElement("img");
+                    avatar.src = friend.avatar_url || "/static/img/default_avatar.png";
+                    avatar.classList.add("friend-avatar");
+                    
+                    let name = document.createElement("span");
+                    name.textContent = friend.name;
+                    
+                    let removeBtn = document.createElement("button");
+                    removeBtn.innerHTML = "&#10006;";
+                    removeBtn.classList.add("remove-btn");
+                    removeBtn.onclick = () => removeFriend(friend.id);
+                    
+                    li.appendChild(avatar);
+                    li.appendChild(name);
+                    li.appendChild(removeBtn);
                     friendsList.appendChild(li);
                 });
-            }
-
-            addFriendButton.addEventListener("click", function() {
-                let friendName = friendInput.value.trim();
-                if (friendName) {
-                    let friends = JSON.parse(localStorage.getItem("friends")) || [];
-                    friends.push(friendName);
-                    localStorage.setItem("friends", JSON.stringify(friends));
-                    friendInput.value = "";
-                    loadFriends();
-                }
             });
+    }
 
+    function showMessage(message, isError = false) {
+        const messageBox = document.getElementById("message-box");
+        messageBox.textContent = message;
+        messageBox.classList.toggle("error", isError);
+        messageBox.style.display = "block";
+        setTimeout(() => { messageBox.style.display = "none"; }, 3000);
+    }
+
+    function loadFriendRequests() {
+        fetch("/api/get_friend_requests")
+            .then(response => response.json())
+            .then(requests => {
+                friendRequestsList.innerHTML = "";
+                requests.forEach(request => {
+                    let li = document.createElement("li");
+                    li.classList.add("request-item");
+                    li.textContent = `Запрос от ${request.sender}`;
+                    
+                    let acceptBtn = document.createElement("button");
+                    acceptBtn.textContent = "✔";
+                    acceptBtn.classList.add("accept-btn");
+                    acceptBtn.onclick = () => acceptFriendRequest(request.id);
+                    
+                    let rejectBtn = document.createElement("button");
+                    rejectBtn.textContent = "✖";
+                    rejectBtn.classList.add("reject-btn");
+                    rejectBtn.onclick = () => rejectFriendRequest(request.id);
+                    
+                    li.appendChild(acceptBtn);
+                    li.appendChild(rejectBtn);
+                    friendRequestsList.appendChild(li);
+                });
+            });
+    }
+
+    function sendFriendRequest() {
+    let friendName = friendInput.value.trim();
+    if (!friendName) return;
+
+    fetch("/api/send_friend_request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receiver_id: friendName }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        showMessage(data.message || data.error, !!data.error);
+        friendInput.value = "";
+    })
+    .catch(error => console.error("Ошибка:", error));
+    }
+
+
+    function removeFriend(friendId) {
+    fetch(`/api/remove_friend/${friendId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            showMessage(data.message, false);
             loadFriends();
         });
-    </script>
+    }
+
+    function acceptFriendRequest(requestId) {
+    fetch(`/api/accept_friend_request/${requestId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            showMessage(data.message, false);
+            loadFriendRequests();
+            setTimeout(loadFriends, 500);
+        });
+    }
+    
+    function rejectFriendRequest(requestId) {
+    fetch(`/api/reject_friend_request/${requestId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            showMessage(data.message, false);
+            loadFriendRequests();
+        });
+    }
+
+    addFriendButton.addEventListener("click", sendFriendRequest);
+    loadFriends();
+    loadFriendRequests();
+});
+</script>
 {% endblock %}

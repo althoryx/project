@@ -1,10 +1,41 @@
 /* Общие стили для страниц */
-body {
+html, body {
+    height: 100%;
+    min-height: 100vh;
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
+
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Главный контент */
+.dark-mode main {
+    background: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Футер */
+.dark-mode footer {
+    background-color: #222;
+    color: #ddd;
+}
+
+/* Кнопки */
+.dark-mode .btn {
+    background-color: #444;
+}
+
+.dark-mode .btn:hover {
+    background-color: #666;
+}
+
 
 /* Навигация */
 .navbar {
@@ -34,8 +65,11 @@ body {
 
 /* Контент */
 main {
+    flex: 1;
     padding: 20px;
+    padding-bottom: 10px;
     max-width: 900px;
+    min-width: 900px;
     margin: auto;
     background: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -58,6 +92,14 @@ main {
     background-color: #125ab6;
 }
 
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
 /* Формы */
 input, textarea {
     width: 100%;
@@ -72,8 +114,1059 @@ footer {
     text-align: center;
     padding: 10px;
     background-color: #fff;
-    color: #555;
-    position: fixed;
+    color: #555;;
+    position: relative;
     bottom: 0;
     width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+.post {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    background: #fff;
+}
+.post-time {
+    font-size: 12px;
+    color: gray;
+}
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.post-content {
+    margin-top: 10px;
+}
+
+/* Стили для аватарки и кнопки изменения */
+.avatar-label {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.avatar-text {
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 0 0 50% 50%;
+}
+
+.delete-avatar-btn {
+    top: 0;
+    left: 0;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    border-radius: 50% 50% 0 0;
+    cursor: pointer;
+    border: none;
+    display: block;
+}
+
+.avatar-text, .delete-avatar-btn {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    padding: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.avatar-wrapper:hover .avatar-text,
+.avatar-wrapper:hover .delete-avatar-btn {
+    opacity: 1;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Отступ между аватаркой и личной инфой */
+    flex-shrink: 0; /* Аватарка не сжимается */
+}
+
+.user-info {
+    display: none; /* Скрываем личную информацию по умолчанию */
+    margin-top: 10px;
+}
+
+.user-info.active {
+    display: block; /* Показываем при активации */
+}
+
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Выравниваем текст по левому краю */
+    flex-grow: 1; /* Растягиваем основную часть */
+}
+
+.avatar-container {
+    flex-shrink: 0; /* Запрещаем аватарке сжиматься */
+}
+
+.info-toggle {
+    color: gray;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.info-toggle:hover {
+    text-decoration: underline;
+}
+
+.profile-info {
+    display: none;
+    position: absolute;
+    top: 50px; /* Отступ от имени */
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.profile-info.active {
+    display: block;
+}
+
+#toggleInfo {
+    color: gray;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 3px;
+}
+
+#toggleInfo:hover {
+    color: black;
+}
+
+.edit-info {
+    color: gray;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.edit-info:hover {
+    text-decoration: underline;
+}
+
+.modal {
+    display: none; /* Скрываем по умолчанию */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px; /* Фиксированная ширина */
+    max-width: 90%;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Стили для тёмной темы */
+.dark-mode .modal-content {
+    background: #222;
+    color: white;
+}
+
+/* Кнопка закрытия */
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+body.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-theme .modal-content {
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+.dark-theme .profile-info, 
+.dark-theme .profile-main,
+.dark-theme .post, 
+.dark-theme .comment {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #333;
+}
+
+.dark-theme a {
+    color: #1b528a;
+}
+
+.dark-theme button {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-theme input, 
+.dark-theme textarea {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.comment-section {
+    border-top: 1px solid #ddd;
+    padding: 10px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.comments-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    background: #f1f1f1;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 5px;
+}
+
+.comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #777;
+}
+
+.comment-text {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.comment-input-section {
+    display: flex;
+    margin-top: 10px;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.comment-btn {
+    margin-left: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comment-btn:hover {
+    background-color: #0056b3;
+}
+/* Светлая тема (по умолчанию) */
+html, body {
+    height: 100%;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Контейнеры */
+.profile, .new-post, .feed, main {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Футер */
+footer {
+    background-color: #fff;
+    color: #555;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Навигация */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1877f2;
+    padding: 10px 20px;
+    color: white;
+}
+
+/* Кнопки */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #125ab6;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+/* Формы */
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+}
+
+/* Посты */
+.post {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.comment-section {
+    border-top: 1px solid #ddd;
+    padding: 10px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    background: #f1f1f1;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 5px;
+}
+
+/* Темная тема */
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode html {
+    background-color: #121212 !important;
+    min-height: 100vh;
+}
+
+.dark-mode main,
+.dark-mode .profile,
+.dark-mode .new-post,
+.dark-mode .feed,
+.dark-mode .post,
+.dark-mode .comment {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #333;
+}
+
+.dark-mode footer {
+    background-color: #222;
+    color: #ddd;
+}
+
+/* Кнопки */
+.dark-mode .btn {
+    background-color: #444;
+}
+
+.dark-mode .btn:hover {
+    background-color: #666;
+}
+
+.dark-mode input,
+.dark-mode textarea {
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #555;
+}
+
+/* Комментарии */
+.dark-mode .comment {
+    background-color: #2a2a2a;
+}
+
+.dark-mode .comment-text {
+    color: #ddd;
+}
+
+/* Навигация */
+.dark-mode .navbar {
+    background-color: #333;
+}
+
+/* Модальные окна */
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.dark-mode .modal-content {
+    background: #222;
+    color: white;
+}
+
+/* Общие стили для всех кнопок */
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px 10px;
+    color: #555;
+    transition: 0.2s;
+}
+
+button:hover {
+    color: #1877f2;
+}
+
+/* Кнопка лайка */
+.like-post {
+    color: #1877f2;
+    font-weight: bold;
+}
+
+.like-post:hover {
+    color: #125ab6;
+}
+
+/* Кнопка комментариев */
+.comment-toggle {
+    background-color: #007BFF;
+    color: white;
+    border-radius: 5px;
+}
+
+.comment-toggle:hover {
+    background-color: #0056b3;
+}
+
+/* Кнопка удаления поста и комментария */
+.delete-post, .delete-comment {
+    color: red;
+}
+
+.delete-post:hover, .delete-comment:hover {
+    color: darkred;
+}
+
+/* Темная тема */
+.dark-mode button {
+    color: #bbb;
+}
+
+.dark-mode button:hover {
+    color: #72a9f1;
+}
+
+.dark-mode .comment-toggle {
+    background-color: #1b528a;
+}
+
+.dark-mode .comment-toggle:hover {
+    background-color: #125ab6;
+}
+
+.dark-mode .delete-post, 
+.dark-mode .delete-comment {
+    color: #ff5c5c;
+}
+
+.dark-mode .delete-post:hover, 
+.dark-mode .delete-comment:hover {
+    color: #ff1a1a;
+}
+
+.main-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+}
+
+.footer {
+    background: #111;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.dark-mode .dark-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #121212;
+    z-index: -1;
+}
+
+.friend-request button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.friend-request button:first-child {
+    background-color: #28a745;
+    color: white;
+}
+
+.friend-request button:last-child {
+    background-color: #dc3545;
+    color: white;
+}
+
+.friend-list button {
+    margin-left: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.friend-list button:hover {
+    background-color: darkred;
+}
+
+.friend-list, .request-list {
+    list-style: none;
+    padding: 0;
+}
+
+.friend-item, .request-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.friend-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.remove-btn, .accept-btn, .reject-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+.remove-btn { color: red; }
+.accept-btn { color: green; }
+.reject-btn { color: darkred; }
+
+.friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    max-width: 400px;
+}
+.friend-card {
+    text-align: center;
+}
+.friend-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.friend-name {
+    display: block;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 80px;
+}
+.show-all-friends {
+    font-size: 12px;
+    float: right;
+}
+
+/* Стили сообщений */
+.message-box {
+    display: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Светлая тема */
+.message-box {
+    background: lightgreen;
+    color: black;
+}
+
+.message-box.error {
+    background: pink;
+    color: darkred;
+}
+
+/* Тёмная тема */
+.dark-mode .message-box {
+    background: #1b5e20; /* Тёмно-зелёный */
+    color: #d4edda; /* Светло-зелёный текст */
+}
+
+.dark-mode .message-box.error {
+    background: #8b0000; /* Тёмно-красный */
+    color: #f8d7da; /* Светло-красный текст */
+}
+
+/* === Стили для модального окна друзей === */
+.friends-modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.friends-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.friends-modal .close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.friends-modal .close:hover {
+    color: #000;
+}
+
+/* Контейнер списка друзей */
+.friends-modal-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 5px;
+}
+
+/* Карточка друга */
+.friends-modal-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease-in-out;
+}
+
+.friends-modal-item:hover {
+    background: #f9f9f9;
+}
+
+.friends-modal-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.friends-modal-item a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.friends-modal-item a:hover {
+    color: #007bff;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Улучшенные стили для адаптивного отображения сообщений */
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 10px;
+    flex-grow: 1;
+    max-height: calc(100vh - 200px); /* Автоматическая подстройка высоты */
+    box-sizing: border-box;
+}
+
+.message {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
+.message.sent {
+    background-color: #0078ff;
+    color: white;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.message.received {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: flex-start;
+    text-align: left;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100vh;
+    box-sizing: border-box;
+}
+
+.input-container {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.input-container input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input-container button {
+    background: #0078ff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.input-container button:hover {
+    background: #005bbf;
+}
+
+/* Стили для контейнера чата */
+.chat-container {
+    display: flex;
+    height: 80vh;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.chat-list {
+    width: 30%;
+    background: #f0f0f0;
+    color: #000;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#messages-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.message-input {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    background: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+.message-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.message-input button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap; /* Чтобы текст в кнопке не переносился */
+}
+
+.message-input button:hover {
+    background-color: #0056b3;
+}
+
+
+.message {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.own-message {
+    background: #0078ff;
+    color: #fff;
+    text-align: right;
+}
+
+.incoming-message {
+    background: #e5e5ea;
+    color: #000;
+}
+
+/* Стили для тёмной темы */
+.dark-mode .chat-container {
+    border-color: #444;
+}
+
+.dark-mode .chat-list {
+    background: #222;
+    color: #fff;
+}
+
+.dark-mode .chat-window {
+    background: #333;
+    color: #fff;
+}
+
+.dark-mode .message-input {
+    background: #222;
+}
+
+.dark-mode .own-message {
+    background: #4CAF50;
+}
+
+.dark-mode .incoming-message {
+    background: #555;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+.chat-menu {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+#chat-dropdown-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.chat-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none; /* Меняем с hidden на display: none */
+}
+
+.chat-dropdown li {
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.chat-dropdown li:hover {
+    background: #f1f1f1;
+}
+
+.show {
+    display: block; /* Новый класс для показа списка */
 }

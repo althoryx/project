@@ -4,38 +4,379 @@
 
 {% block content %}
     <section class="profile">
-        <h2>Профиль пользователя</h2>
-        <div class="profile-info">
-            <label for="username">Логин:</label>
-            <input type="text" id="username" value="" disabled>
-            
-            <label for="email">Email:</label>
-            <input type="email" id="email" value="">
-            
-            <label for="bio">О себе:</label>
-            <textarea id="bio"></textarea>
-            
-            <button id="saveProfile" class="btn">Сохранить</button>
+        <div class="profile-header">
+            <div class="avatar-container">
+                <form id="avatarForm" enctype="multipart/form-data">
+                    <div class="avatar-wrapper">
+                        <label for="avatarInput">
+                            <img id="avatarImage" src="{{ user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Аватар" class="profile-avatar">
+                            <span class="avatar-text">Изменить</span>
+                        </label>
+                        <button id="deleteAvatar" class="delete-avatar-btn">Удалить</button>
+                    </div>
+                    <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
+                </form>
+            </div>
+        
+            <div class="profile-main">
+                <h2 id="profile-username">{{ user.username }}</h2>
+                <span id="toggleInfo" class="info-toggle">Подробнее</span>
+            </div>
+        </div>                    
+    </section>
+
+    <section class="friends-block">
+        <h3>Друзья <a href="/friends" class="show-all-friends">Показать всех</a></h3>
+        <div id="friends-list" class="friends-grid">
+            <p>Загрузка...</p>
         </div>
     </section>
 
+    <section class="new-post">
+        <h3>Что у вас нового?</h3>
+        <textarea id="postContent" placeholder="Напишите что-нибудь..."></textarea>
+        <button id="postButton" class="btn">Опубликовать</button>
+    </section>
+
+    <section class="feed">
+        <h3>Публикации</h3>
+        {% for post in posts %}
+            <div class="post" id="post-{{ post.id }}">
+                <div class="post-header">
+                    <img src="{{ post.user.avatar_url }}" class="post-avatar">
+                    <strong>{{ post.user.username }}</strong>
+                    <span class="post-time">{{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    <button class="delete-post" data-id="{{ post.id }}">🗑 Удалить</button>
+                </div>
+                <p>{{ post.content }}</p>
+    
+                <div class="post-actions">
+                    <button class="like-post" data-id="{{ post.id }}">❤️ {{ post.likes }}</button>
+                    <button class="comment-toggle" data-id="{{ post.id }}">💬 Комментарии</button>
+                </div>
+    
+                <div class="comment-section hidden" id="comment-section-{{ post.id }}">
+                    <div class="comments-list">
+                        {% for comment in post.comments %}
+                            <div class="comment" id="comment-{{ comment.id }}">
+                                <img src="{{ comment.user.avatar_url }}" class="comment-avatar">
+                                <div class="comment-content">
+                                    <strong>{{ comment.user.username }}</strong>
+                                    <span class="comment-time">{{ comment.timestamp.strftime('%H:%M %d.%m.%Y') }}</span>
+                                    <p class="comment-text">{{ comment.content }}</p>
+                                </div>
+                                {% if comment.user_id == user.id %}
+                                    <button class="delete-comment" data-id="{{ comment.id }}">🗑</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="comment-input-section">
+                        <input type="text" class="comment-input" data-id="{{ post.id }}" placeholder="Написать комментарий...">
+                        <button class="comment-btn" data-id="{{ post.id }}">Отправить</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+    <!-- Модальное окно -->
+    <div id="infoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Личная информация</h3>
+            <p><strong>Email:</strong> <span id="emailText">{{ user.email }}</span> 
+                <a href="#" class="edit-info" data-field="email">(Изменить)</a>
+            </p>
+            <input type="email" id="editEmail" class="hidden" value="{{ user.email }}">
+    
+            <p><strong>О себе:</strong> <span id="bioText">{{ user.bio or 'Не указано' }}</span> 
+                <a href="#" class="edit-info" data-field="bio">(Изменить)</a>
+            </p>
+            <textarea id="editBio" class="hidden">{{ user.bio or '' }}</textarea>
+    
+            <button id="saveInfo" class="btn hidden">Сохранить</button>
+        </div>
+    </div>
+    
+
     <script>
+        // Отображение друзей
+        document.addEventListener("DOMContentLoaded", function () {
+            const friendsList = document.getElementById("friends-list");
+
+            function loadFriends() {
+                fetch(`/api/get_friends/{{ user.id }}`)
+                    .then(response => response.json())
+                    .then(friends => {
+                        friendsList.innerHTML = "";
+                        if (friends.length === 0) {
+                            friendsList.innerHTML = "<p>Нет друзей</p>";
+                        } else {
+                            friends.slice(0, 6).forEach(friend => {
+                                let div = document.createElement("div");
+                                div.classList.add("friend-card");
+
+                                let avatar = document.createElement("img");
+                                avatar.src = friend.avatar_url || "/static/img/default_avatar.png";
+                                avatar.classList.add("friend-avatar");
+
+                                let name = document.createElement("a");
+                                name.href = `/profile/${friend.id}`;
+                                name.textContent = friend.name;
+                                name.classList.add("friend-name");
+
+                                div.appendChild(avatar);
+                                div.appendChild(name);
+                                friendsList.appendChild(div);
+                            });
+                        }
+                    });
+            }
+
+            loadFriends();
+        });
+        
+        // Редактирование информации
+        document.querySelectorAll(".edit-info").forEach(link => {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    const field = this.getAttribute("data-field");
+                    if (field === "email") {
+                        document.getElementById("emailText").classList.add("hidden");
+                        document.getElementById("editEmail").classList.remove("hidden");
+                    } else if (field === "bio") {
+                        document.getElementById("bioText").classList.add("hidden");
+                        document.getElementById("editBio").classList.remove("hidden");
+                    }
+                    document.getElementById("saveInfo").classList.remove("hidden");
+                });
+            });
+        
+            document.addEventListener("DOMContentLoaded", function () {
+                const deleteAvatarBtn = document.getElementById("deleteAvatar");
+                const avatarImage = document.getElementById("avatarImage");
+
+                if (deleteAvatarBtn) {
+                    deleteAvatarBtn.addEventListener("click", function (event) {
+                        event.preventDefault(); // Отключаем стандартное поведение кнопки
+
+                        fetch("/api/delete_avatar", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                avatarImage.src = "/static/img/default_avatar.png"; // Меняем на дефолтную аватарку
+                                deleteAvatarBtn.style.display = "none"; // Скрываем кнопку
+                            } else {
+                                alert("Ошибка: " + (data.error || "Неизвестная ошибка"));
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Ошибка запроса:", error);
+                            alert("Ошибка при удалении аватара.");
+                        });
+                    });
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const toggleInfo = document.getElementById("toggleInfo");
+                const infoContainer = document.getElementById("infoContainer");
+                
+                toggleInfo.addEventListener("click", function () {
+                    infoContainer.classList.toggle("active"); // Открываем/закрываем личную информацию
+                });
+
+                const editButtons = document.querySelectorAll(".edit-info");
+                const saveButton = document.getElementById("saveInfo");
+
+                editButtons.forEach(button => {
+                    button.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        let field = this.getAttribute("data-field");
+                        let textSpan = document.getElementById(field + "Text");
+                        let inputField = document.getElementById("edit" + field.charAt(0).toUpperCase() + field.slice(1));
+
+                        textSpan.classList.add("hidden");
+                        inputField.classList.remove("hidden");
+                        saveButton.classList.remove("hidden");
+                    });
+                });
+
+                saveButton.addEventListener("click", function () {
+                    // Здесь можно отправить изменения на сервер
+                    saveButton.classList.add("hidden");
+                });
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const modal = document.getElementById("infoModal");
+                const btn = document.getElementById("toggleInfo");
+                const closeBtn = document.querySelector(".modal .close");
+
+                // Скрываем модальное окно при загрузке
+                modal.style.display = "none";
+
+                // Открытие модального окна (проверяем, существует ли кнопка)
+                if (btn) {
+                    btn.addEventListener("click", function () {
+                        modal.style.display = "flex";
+                    });
+                }
+
+                // Закрытие окна по клику на крестик (проверяем, существует ли кнопка)
+                if (closeBtn) {
+                    closeBtn.addEventListener("click", function () {
+                        modal.style.display = "none";
+                    });
+                }
+
+                // Закрытие окна при клике вне контента
+                window.addEventListener("click", function (event) {
+                    if (event.target === modal) {
+                        modal.style.display = "none";
+                    }
+                });
+            });
+
+
         document.addEventListener("DOMContentLoaded", function() {
-            const username = document.getElementById("username");
-            const email = document.getElementById("email");
-            const bio = document.getElementById("bio");
-            const saveButton = document.getElementById("saveProfile");
+            // Открытие/скрытие комментариев
+            document.querySelectorAll(".comment-toggle").forEach(button => {
+                button.addEventListener("click", function() {
+                    const postId = this.getAttribute("data-id");
+                    const commentSection = document.getElementById(`comment-section-${postId}`);
+                    commentSection.classList.toggle("hidden");
+                });
+            });
+            function validateEmail(email) {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailPattern.test(email);
+            }
+
+            document.getElementById("toggleInfo").addEventListener("click", function() {
+                document.getElementById("infoContainer").classList.toggle("hidden");
+            });
+
+            document.getElementById("saveInfo").addEventListener("click", function () {
+                const email = document.getElementById("editEmail").value.trim();
+                const bio = document.getElementById("editBio").value.trim();
+
+                if (!validateEmail(email)) {
+                    alert("Введите корректный email!");
+                    return;
+                }
+
+                fetch("/api/update_profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, bio })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        location.reload();
+                    } else {
+                        alert("Ошибка сохранения: " + (data.error || "Неизвестная ошибка"));
+                    }
+                });
+            });
+
+            // Отправка комментария
+            document.querySelectorAll(".comment-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    const postId = this.getAttribute("data-id");
+                    const commentInput = document.querySelector(`.comment-input[data-id='${postId}']`);
+                    const commentText = commentInput.value.trim();
+
+                    if (!commentText) {
+                        alert("Комментарий не может быть пустым!");
+                        return;
+                    }
+
+                    fetch(`/api/comment_post/${postId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ content: commentText })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            location.reload();
+                        } else {
+                            alert("Ошибка при отправке комментария: " + (data.error || "Неизвестная ошибка"));
+                        }
+                    });
+                });
+            });
+
+            // Лайк поста
+            document.querySelectorAll(".like-post").forEach(button => {
+                button.addEventListener("click", function() {
+                    const postId = this.getAttribute("data-id");
+
+                    fetch(`/api/like_post/${postId}`, { method: "POST" })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            this.textContent = `❤️ ${data.likes}`;
+                        } else {
+                            alert("Ошибка: " + (data.error || "Неизвестная ошибка"));
+                        }
+                    });
+                });
+            });
+
+            // Удаление поста
+            document.querySelectorAll(".delete-post").forEach(button => {
+                button.addEventListener("click", function() {
+                    if (!confirm("Удалить этот пост?")) return;
+
+                    fetch(`/api/delete_post/${this.dataset.id}`, { method: "DELETE" })
+                    .then(() => location.reload());
+                });
+            });
             
-            // Загрузка данных из localStorage
-            username.value = localStorage.getItem("username") || "Пользователь";
-            email.value = localStorage.getItem("email") || "";
-            bio.value = localStorage.getItem("bio") || "";
-            
-            // Сохранение данных
-            saveButton.addEventListener("click", function() {
-                localStorage.setItem("email", email.value);
-                localStorage.setItem("bio", bio.value);
-                alert("Данные профиля сохранены!");
+            // Создание поста
+            document.getElementById("postButton").addEventListener("click", function() {
+                const content = document.getElementById("postContent").value.trim();
+                if (!content) {
+                    alert("Пост не может быть пустым!");
+                    return;
+                }
+
+                fetch("/api/create_post", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        location.reload();
+                    } else {
+                        alert("Ошибка при создании поста: " + (data.error || "Неизвестная ошибка"));
+                    }
+                });
+            });
+
+            // Удаление комментария
+            document.querySelectorAll(".delete-comment").forEach(button => {
+                button.addEventListener("click", function() {
+                    const commentId = this.getAttribute("data-id");
+
+                    fetch(`/api/delete_comment/${commentId}`, { method: "DELETE" })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            document.getElementById(`comment-${commentId}`).remove();
+                        } else {
+                            alert("Ошибка удаления: " + (data.error || "Неизвестная ошибка"));
+                        }
+                    });
+                });
             });
         });
     </script>

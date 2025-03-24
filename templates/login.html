@@ -5,32 +5,48 @@
 {% block content %}
     <section class="login">
         <h2>Вход в аккаунт</h2>
-        <form id="loginForm">
+        <div id="errorMessage" style="color: red; display: none;"></div> <!-- Ошибка без alert -->
+
+        <form id="loginForm"> <!-- УБИРАЕМ method="POST" -->
             <label for="username">Логин:</label>
             <input type="text" id="username" name="username" required>
-            
+
             <label for="password">Пароль:</label>
             <input type="password" id="password" name="password" required>
-            
+
             <button type="submit" class="btn">Войти</button>
         </form>
+
         <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрируйтесь</a></p>
     </section>
 
     <script>
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Предотвращаем двойную отправку
+
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            const storedUsername = localStorage.getItem("username");
-            const storedPassword = localStorage.getItem("password");
-            
-            if (username === storedUsername && password === storedPassword) {
-                alert("Вход выполнен успешно!");
-                window.location.href = "{{ url_for('profile') }}";
-            } else {
-                alert("Неверный логин или пароль.");
+            const errorMessage = document.getElementById("errorMessage");
+            errorMessage.style.display = "none"; // Скрываем старые ошибки
+
+            try {
+                const response = await fetch("{{ url_for('login') }}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = "{{ url_for('profile') }}"; // Перенаправление после входа
+                } else {
+                    errorMessage.textContent = data.error || "Ошибка входа";
+                    errorMessage.style.display = "block"; // Показываем сообщение
+                }
+            } catch (error) {
+                errorMessage.textContent = "Ошибка сети. Попробуйте ещё раз.";
+                errorMessage.style.display = "block";
             }
         });
     </script>

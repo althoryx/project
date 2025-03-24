@@ -5,15 +5,58 @@
 {% block content %}
     <section class="register">
         <h2>Создайте аккаунт</h2>
-        <form action="{{ url_for('register') }}" method="post">
+        <div id="registerMessage" style="color: red; display: none;"></div>
+
+        <form id="registerForm">
             <label for="username">Логин:</label>
             <input type="text" id="username" name="username" required>
-            
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
             <label for="password">Пароль:</label>
             <input type="password" id="password" name="password" required>
-            
+
             <button type="submit" class="btn">Зарегистрироваться</button>
         </form>
+
         <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a></p>
     </section>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); 
+    
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const registerMessage = document.getElementById("registerMessage");
+    
+            registerMessage.style.display = "none";
+    
+            try {
+                const response = await fetch("{{ url_for('register') }}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email, password })
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    registerMessage.style.color = "green";
+                    registerMessage.textContent = "Регистрация успешна! Перенаправление...";
+                    registerMessage.style.display = "block";
+                    setTimeout(() => { window.location.href = "{{ url_for('login') }}"; }, 2000);
+                } else {
+                    registerMessage.style.color = "red";
+                    registerMessage.textContent = data.error || "Ошибка регистрации.";
+                    registerMessage.style.display = "block";
+                }
+            } catch (error) {
+                registerMessage.textContent = "Ошибка сети. Попробуйте ещё раз.";
+                registerMessage.style.display = "block";
+            }
+        });
+    </script>    
 {% endblock %}

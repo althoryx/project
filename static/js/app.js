@@ -11,50 +11,44 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Уведомления о новых сообщениях (имитация)
-    const notificationBell = document.getElementById("notificationBell");
-    if (notificationBell) {
-        setInterval(() => {
-            let hasNew = Math.random() > 0.7;
-            if (hasNew) {
-                notificationBell.classList.add("new-notification");
+    // Уведомления о новых сообщениях (API)
+    async function checkNotifications() {
+        try {
+            let response = await fetch("/api/notifications");
+            let notifications = await response.json();
+            if (notifications.length > 0) {
+                document.getElementById("notificationBell").classList.add("new-notification");
             }
-        }, 5000);
+        } catch (error) {
+            console.error("Ошибка загрузки уведомлений:", error);
+        }
     }
 
-    // Удаление классов уведомлений при клике
-    if (notificationBell) {
-        notificationBell.addEventListener("click", function() {
-            this.classList.remove("new-notification");
-        });
-    }
+    setInterval(checkNotifications, 5000);
+});
 
-    // Обработчик форм входа и регистрации (localStorage)
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) {
-        loginForm.addEventListener("submit", function(event) {
-            event.preventDefault();
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const storedUsername = localStorage.getItem("username");
-            const storedPassword = localStorage.getItem("password");
-            
-            if (username === storedUsername && password === storedPassword) {
-                alert("Вход выполнен успешно!");
-                window.location.href = "/profile";
-            } else {
-                alert("Неверный логин или пароль.");
-            }
-        });
-    }
+document.addEventListener("DOMContentLoaded", function() {
+    const avatarInput = document.getElementById("avatarInput");
+    const avatarImage = document.getElementById("avatarImage");
 
-    // Сохранение данных профиля
-    const saveProfileButton = document.getElementById("saveProfile");
-    if (saveProfileButton) {
-        saveProfileButton.addEventListener("click", function() {
-            localStorage.setItem("email", document.getElementById("email").value);
-            localStorage.setItem("bio", document.getElementById("bio").value);
-            alert("Данные профиля сохранены!");
+    if (avatarInput) {
+        avatarInput.addEventListener("change", function() {
+            let formData = new FormData();
+            formData.append("avatar", avatarInput.files[0]);
+
+            fetch("/api/upload_avatar", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    avatarImage.src = data.avatar_url + "?t=" + new Date().getTime(); // Добавляем timestamp, чтобы избежать кэширования
+                } else {
+                    alert("Ошибка загрузки аватара: " + data.error);
+                }
+            })
+            .catch(error => console.error("Ошибка загрузки:", error));
         });
     }
 });

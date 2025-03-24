@@ -1,46 +1,74 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Функция для регистрации пользователя
-    async function registerUser(username, email, password) {
-        localStorage.setItem("username", username);
-        localStorage.setItem("email", email);
-        localStorage.setItem("password", password);
-        alert("Регистрация успешна! Теперь войдите в аккаунт.");
-        window.location.href = "/login";
-    }
-
-    // Функция для входа пользователя
-    async function loginUser(username, password) {
-        const storedUsername = localStorage.getItem("username");
-        const storedPassword = localStorage.getItem("password");
-        
-        if (username === storedUsername && password === storedPassword) {
-            alert("Вход выполнен успешно!");
-            window.location.href = "/profile";
-        } else {
-            alert("Неверный логин или пароль.");
-        }
-    }
-
-    // Обработчик формы регистрации
     const registerForm = document.getElementById("registerForm");
+    const loginForm = document.getElementById("loginForm");
+
+    // Регистрация
     if (registerForm) {
-        registerForm.addEventListener("submit", function(event) {
+        registerForm.addEventListener("submit", async function(event) {
             event.preventDefault();
             const username = document.getElementById("username").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            registerUser(username, email, password);
+            const registerMessage = document.getElementById("registerMessage");
+
+            registerMessage.style.display = "none";
+
+            try {
+                const response = await fetch("/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    registerMessage.style.color = "green";
+                    registerMessage.textContent = "Регистрация успешна!";
+                    registerMessage.style.display = "block";
+                    setTimeout(() => { window.location.href = "/login"; }, 2000);
+                } else {
+                    registerMessage.style.color = "red";
+                    registerMessage.textContent = data.error || "Ошибка регистрации";
+                    registerMessage.style.display = "block";
+                }
+            } catch (error) {
+                registerMessage.textContent = "Ошибка сети!";
+                registerMessage.style.display = "block";
+            }
         });
     }
 
-    // Обработчик формы входа
-    const loginForm = document.getElementById("loginForm");
+    // Вход
     if (loginForm) {
-        loginForm.addEventListener("submit", function(event) {
+        loginForm.addEventListener("submit", async function(event) {
             event.preventDefault();
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            loginUser(username, password);
+            const loginMessage = document.getElementById("loginMessage");
+
+            loginMessage.style.display = "none";
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = "/profile";
+                } else {
+                    loginMessage.style.color = "red";
+                    loginMessage.textContent = data.error || "Ошибка входа";
+                    loginMessage.style.display = "block";
+                }
+            } catch (error) {
+                loginMessage.textContent = "Ошибка сети!";
+                loginMessage.style.display = "block";
+            }
         });
     }
 });
