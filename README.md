@@ -13,7 +13,7 @@
 
 ## Используемые технологии
 - Backend: Python, Flask, SQLAlchemy, Flask-Login, JWT.
-- Frontend: HTML, CSS, JavaScript (доработка требуется).
+- Frontend: HTML, CSS, JavaScript.
 - База данных: SQLite.
 - WebSockets: Flask-SocketIO.
 
