@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Функция для загрузки списка пользователей (поиск)
     async function searchUsers(query) {
         try {
             let response = await fetch(`/api/users?query=${query}`);
@@ -11,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Функция для загрузки сообщений
     async function loadMessages() {
         try {
             let response = await fetch("/api/messages");
@@ -23,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Функция для загрузки уведомлений
     async function loadNotifications() {
         try {
             let response = await fetch("/api/notifications");
@@ -35,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Пример использования API в поиске
     const searchInput = document.getElementById("searchQuery");
     const searchButton = document.getElementById("searchButton");
     const searchResults = document.getElementById("searchResults");

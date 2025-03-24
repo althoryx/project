@@ -5,9 +5,9 @@
 {% block content %}
     <section class="login">
         <h2>Вход в аккаунт</h2>
-        <div id="errorMessage" style="color: red; display: none;"></div> <!-- Ошибка без alert -->
+        <div id="errorMessage" style="color: red; display: none;"></div>
 
-        <form id="loginForm"> <!-- УБИРАЕМ method="POST" -->
+        <form id="loginForm">
             <label for="username">Логин:</label>
             <input type="text" id="username" name="username" required>
 
@@ -22,12 +22,12 @@
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
-            event.preventDefault(); // Предотвращаем двойную отправку
+            event.preventDefault();
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
             const errorMessage = document.getElementById("errorMessage");
-            errorMessage.style.display = "none"; // Скрываем старые ошибки
+            errorMessage.style.display = "none";
 
             try {
                 const response = await fetch("{{ url_for('login') }}", {
@@ -39,10 +39,10 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.location.href = "{{ url_for('profile') }}"; // Перенаправление после входа
+                    window.location.href = "{{ url_for('profile') }}";
                 } else {
                     errorMessage.textContent = data.error || "Ошибка входа";
-                    errorMessage.style.display = "block"; // Показываем сообщение
+                    errorMessage.style.display = "block";
                 }
             } catch (error) {
                 errorMessage.textContent = "Ошибка сети. Попробуйте ещё раз.";

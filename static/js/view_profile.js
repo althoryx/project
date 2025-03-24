@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // === Загрузка друзей ===
     const friendsList = document.getElementById("friends-list");
     if (friendsList) {
         function loadFriends() {
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
         loadFriends();
     }
 
-    // === Лайки постов ===
     document.querySelectorAll(".like-post").forEach(button => {
         button.addEventListener("click", function () {
             const postId = this.getAttribute("data-id");
@@ -50,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // === Комментирование постов ===
     document.querySelectorAll(".comment-btn").forEach(button => {
         button.addEventListener("click", function () {
             const postId = this.getAttribute("data-id");
@@ -78,7 +75,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // === Удаление комментариев (если владелец) ===
     document.querySelectorAll(".delete-comment").forEach(button => {
         button.addEventListener("click", function () {
             const commentId = this.getAttribute("data-id");
@@ -95,7 +91,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // === Модальное окно информации о пользователе ===
     const modal = document.getElementById("infoModal");
     const btn = document.getElementById("toggleInfo");
     const closeBtn = document.querySelector(".modal .close");
@@ -134,13 +129,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (showAllFriendsBtn) {
         showAllFriendsBtn.addEventListener("click", function (event) {
             event.preventDefault();
-            modal.style.display = "flex"; // Открываем модальное окно
+            modal.style.display = "flex";
 
-            // Загружаем список друзей
             fetch(`/api/get_friends/${profileUserId}`)
                 .then(response => response.json())
                 .then(friends => {
-                    allFriendsList.innerHTML = ""; // Очищаем список перед загрузкой
+                    allFriendsList.innerHTML = "";
                     if (friends.length === 0) {
                         allFriendsList.innerHTML = "<p>Нет друзей</p>";
                     } else {
@@ -165,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Закрытие окна
     closeBtn.addEventListener("click", function () {
         modal.style.display = "none";
     });

@@ -24,7 +24,6 @@
         const notificationsToggle = document.getElementById("notifications");
         const saveButton = document.getElementById("saveSettings");
     
-        // Загружаем текущие настройки с сервера
         fetch("/api/get_settings")
         .then(response => response.json())
         .then(data => {
@@ -32,7 +31,6 @@
             notificationsToggle.checked = data.notifications;
         });
     
-        // Сохранение настроек
         saveButton.addEventListener("click", function() {
             const settings = {
                 dark_mode: darkModeToggle.checked,
@@ -48,7 +46,6 @@
             .then(data => {
                 alert(data.message);
     
-                // Сразу применяем тему на всех страницах
                 if (darkModeToggle.checked) {
                     document.body.classList.add("dark-mode");
                     localStorage.setItem("darkMode", "true");
@@ -65,7 +62,6 @@
         const privateProfileToggle = document.getElementById("privateProfile");
         const saveButton = document.getElementById("saveSettings");
 
-        // Загружаем текущие настройки с сервера
         fetch("/api/get_settings")
         .then(response => response.json())
         .then(data => {
@@ -74,7 +70,6 @@
             privateProfileToggle.checked = data.is_private;
         });
 
-        // Сохранение настроек
         saveButton.addEventListener("click", function() {
             const settings = {
                 dark_mode: darkModeToggle.checked,

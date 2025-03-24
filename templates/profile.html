@@ -100,7 +100,6 @@
     
 
     <script>
-        // Отображение друзей
         document.addEventListener("DOMContentLoaded", function () {
             const friendsList = document.getElementById("friends-list");
 
@@ -136,7 +135,6 @@
             loadFriends();
         });
         
-        // Редактирование информации
         document.querySelectorAll(".edit-info").forEach(link => {
                 link.addEventListener("click", function(event) {
                     event.preventDefault();
@@ -158,7 +156,7 @@
 
                 if (deleteAvatarBtn) {
                     deleteAvatarBtn.addEventListener("click", function (event) {
-                        event.preventDefault(); // Отключаем стандартное поведение кнопки
+                        event.preventDefault();
 
                         fetch("/api/delete_avatar", {
                             method: "POST",
@@ -167,8 +165,8 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                avatarImage.src = "/static/img/default_avatar.png"; // Меняем на дефолтную аватарку
-                                deleteAvatarBtn.style.display = "none"; // Скрываем кнопку
+                                avatarImage.src = "/static/img/default_avatar.png";
+                                deleteAvatarBtn.style.display = "none";
                             } else {
                                 alert("Ошибка: " + (data.error || "Неизвестная ошибка"));
                             }
@@ -186,7 +184,7 @@
                 const infoContainer = document.getElementById("infoContainer");
                 
                 toggleInfo.addEventListener("click", function () {
-                    infoContainer.classList.toggle("active"); // Открываем/закрываем личную информацию
+                    infoContainer.classList.toggle("active");
                 });
 
                 const editButtons = document.querySelectorAll(".edit-info");
@@ -206,7 +204,6 @@
                 });
 
                 saveButton.addEventListener("click", function () {
-                    // Здесь можно отправить изменения на сервер
                     saveButton.classList.add("hidden");
                 });
             });
@@ -216,24 +213,20 @@
                 const btn = document.getElementById("toggleInfo");
                 const closeBtn = document.querySelector(".modal .close");
 
-                // Скрываем модальное окно при загрузке
                 modal.style.display = "none";
 
-                // Открытие модального окна (проверяем, существует ли кнопка)
                 if (btn) {
                     btn.addEventListener("click", function () {
                         modal.style.display = "flex";
                     });
                 }
 
-                // Закрытие окна по клику на крестик (проверяем, существует ли кнопка)
                 if (closeBtn) {
                     closeBtn.addEventListener("click", function () {
                         modal.style.display = "none";
                     });
                 }
 
-                // Закрытие окна при клике вне контента
                 window.addEventListener("click", function (event) {
                     if (event.target === modal) {
                         modal.style.display = "none";
@@ -243,7 +236,6 @@
 
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Открытие/скрытие комментариев
             document.querySelectorAll(".comment-toggle").forEach(button => {
                 button.addEventListener("click", function() {
                     const postId = this.getAttribute("data-id");
@@ -284,7 +276,6 @@
                 });
             });
 
-            // Отправка комментария
             document.querySelectorAll(".comment-btn").forEach(button => {
                 button.addEventListener("click", function() {
                     const postId = this.getAttribute("data-id");
@@ -312,7 +303,6 @@
                 });
             });
 
-            // Лайк поста
             document.querySelectorAll(".like-post").forEach(button => {
                 button.addEventListener("click", function() {
                     const postId = this.getAttribute("data-id");
@@ -329,7 +319,6 @@
                 });
             });
 
-            // Удаление поста
             document.querySelectorAll(".delete-post").forEach(button => {
                 button.addEventListener("click", function() {
                     if (!confirm("Удалить этот пост?")) return;
@@ -339,7 +328,6 @@
                 });
             });
             
-            // Создание поста
             document.getElementById("postButton").addEventListener("click", function() {
                 const content = document.getElementById("postContent").value.trim();
                 if (!content) {
@@ -362,7 +350,6 @@
                 });
             });
 
-            // Удаление комментария
             document.querySelectorAll(".delete-comment").forEach(button => {
                 button.addEventListener("click", function() {
                     const commentId = this.getAttribute("data-id");

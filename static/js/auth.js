@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const registerForm = document.getElementById("registerForm");
     const loginForm = document.getElementById("loginForm");
 
-    // Регистрация
     if (registerForm) {
         registerForm.addEventListener("submit", async function(event) {
             event.preventDefault();

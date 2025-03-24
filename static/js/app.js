@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Переключение темной темы
     const darkModeToggle = document.getElementById("darkMode");
     if (darkModeToggle) {
         darkModeToggle.checked = localStorage.getItem("darkMode") === "true";
@@ -11,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Уведомления о новых сообщениях (API)
     async function checkNotifications() {
         try {
             let response = await fetch("/api/notifications");
@@ -43,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    avatarImage.src = data.avatar_url + "?t=" + new Date().getTime(); // Добавляем timestamp, чтобы избежать кэширования
+                    avatarImage.src = data.avatar_url + "?t=" + new Date().getTime();
                 } else {
                     alert("Ошибка загрузки аватара: " + data.error);
                 }

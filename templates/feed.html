@@ -53,7 +53,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Открытие/скрытие комментариев
         document.querySelectorAll(".comment-toggle").forEach(button => {
             button.addEventListener("click", function() {
                 const postId = this.getAttribute("data-id");
@@ -65,7 +64,6 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
-        // Отправка комментария
         document.querySelectorAll(".comment-btn").forEach(button => {
             button.addEventListener("click", function() {
                 const postId = this.getAttribute("data-id");
@@ -85,7 +83,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.message) {
-                        location.reload();  // Обновляем страницу после комментария
+                        location.reload();
                     } else {
                         alert("Ошибка при отправке комментария: " + (data.error || "Неизвестная ошибка"));
                     }
@@ -93,7 +91,6 @@
             });
         });
 
-        // Лайк поста
         document.querySelectorAll(".like-post").forEach(button => {
             button.addEventListener("click", function() {
                 const postId = this.getAttribute("data-id");
@@ -110,7 +107,6 @@
             });
         });
 
-        // Удаление поста
         document.querySelectorAll(".delete-post").forEach(button => {
             button.addEventListener("click", function() {
                 if (!confirm("Удалить этот пост?")) return;
@@ -120,7 +116,6 @@
             });
         });
 
-        // Создание поста
         document.getElementById("postButton").addEventListener("click", function() {
             const content = document.getElementById("postContent").value.trim();
             if (!content) {
@@ -142,7 +137,7 @@
                 }
             });
         });
-        // Удаление комментария
+
         document.querySelectorAll(".delete-comment").forEach(button => {
             button.addEventListener("click", function() {
                 const commentId = this.getAttribute("data-id");

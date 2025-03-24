@@ -184,9 +184,9 @@ def get_messages(receiver_id):
         {
             "id": msg.id,
             "sender": msg.sender.username,
-            "sender_id": msg.sender.id,  # Добавляем sender_id
+            "sender_id": msg.sender.id,
             "receiver": msg.receiver.username,
-            "receiver_id": msg.receiver.id,  # Добавляем receiver_id
+            "receiver_id": msg.receiver.id,
             "content": msg.content,
             "timestamp": msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')
         } for msg in messages
@@ -236,7 +236,7 @@ def update_settings():
 @login_required
 def send_friend_request():
     data = request.json
-    receiver_name = data.get("receiver_id")  # Это username, а не ID
+    receiver_name = data.get("receiver_id")
 
     if not receiver_name:
         return jsonify({"error": "Не указано имя получателя"}), 400
@@ -248,7 +248,6 @@ def send_friend_request():
     if receiver.id == current_user.id:
         return jsonify({"error": "Нельзя отправить заявку самому себе"}), 400
 
-    # Проверяем, является ли этот пользователь уже другом
     existing_friendship = Friendship.query.filter(
         ((Friendship.user_id == current_user.id) & (Friendship.friend_id == receiver.id)) |
         ((Friendship.user_id == receiver.id) & (Friendship.friend_id == current_user.id))
@@ -257,7 +256,6 @@ def send_friend_request():
     if existing_friendship:
         return jsonify({"error": "Вы уже друзья"}), 400
 
-    # Проверяем, нет ли уже отправленной заявки текущим пользователем
     existing_request = FriendRequest.query.filter_by(
         sender_id=current_user.id, receiver_id=receiver.id
     ).first()
@@ -265,7 +263,6 @@ def send_friend_request():
     if existing_request:
         return jsonify({"error": "Вы уже отправили заявку"}), 400
 
-    # Проверяем, нет ли заявки от получателя
     reverse_request = FriendRequest.query.filter_by(
         sender_id=receiver.id, receiver_id=current_user.id
     ).first()
@@ -273,7 +270,6 @@ def send_friend_request():
     if reverse_request:
         return jsonify({"error": "Этот пользователь уже отправил вам заявку"}), 400
 
-    # Создаём новую заявку
     new_request = FriendRequest(sender_id=current_user.id, receiver_id=receiver.id)
     db.session.add(new_request)
     db.session.commit()
@@ -513,7 +509,7 @@ def messages():
 @app.route('/feed')
 @login_required
 def feed():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()  # Загружаем все посты пользователей
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
     return render_template('feed.html', user=current_user, posts=posts)
 
 
@@ -582,7 +578,7 @@ def like_post(post_id):
 
     if existing_like:
         db.session.delete(existing_like)
-        post.likes = max(0, post.likes - 1)  # Исключаем отрицательные значения
+        post.likes = max(0, post.likes - 1)
     else:
         new_like = PostLikes(post_id=post_id, user_id=current_user.id)
         db.session.add(new_like)

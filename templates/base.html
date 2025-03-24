@@ -20,7 +20,7 @@
             <ul class="nav-links">
                 {% if request.endpoint not in ['index', 'register', 'login'] %}
                     {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('feed') }}">Главная</a></li>
+                        <li><a href="{{ url_for('feed') }}">Новости</a></li>
                         <li><a href="{{ url_for('messages') }}">Сообщения</a></li>
                         <li><a href="{{ url_for('friends') }}">Друзья</a></li>
                         <li><a href="{{ url_for('profile') }}">Профиль</a></li>
@@ -41,12 +41,10 @@
     </footer>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Загружаем тему из localStorage при загрузке страницы
             if (localStorage.getItem("darkMode") === "true") {
                 document.body.classList.add("dark-mode");
             }
         
-            // Загружаем настройки с сервера (чтобы обновить, если изменились)
             fetch("/api/get_settings")
             .then(response => response.json())
             .then(data => {
@@ -66,19 +64,16 @@
             const btn = document.getElementById("toggleInfo");
             const closeBtn = document.querySelector(".modal .close");
         
-            if (!modal || !btn || !closeBtn) return; // Защита от ошибок
+            if (!modal || !btn || !closeBtn) return;
         
-            // Открытие модального окна
             btn.addEventListener("click", function () {
                 modal.style.display = "flex";
             });
         
-            // Закрытие окна по клику на крестик
             closeBtn.addEventListener("click", function () {
                 modal.style.display = "none";
             });
         
-            // Закрытие окна при клике вне контента
             window.addEventListener("click", function (event) {
                 if (event.target === modal) {
                     modal.style.display = "none";
@@ -91,12 +86,10 @@
             const toggleThemeBtn = document.getElementById("toggleTheme");
             const body = document.body;
 
-            // Проверяем, сохранена ли тема в localStorage
             if (localStorage.getItem("theme") === "dark") {
                 body.classList.add("dark-theme");
             }
 
-            // Переключение темы
             toggleThemeBtn.addEventListener("click", function () {
                 body.classList.toggle("dark-theme");
                 localStorage.setItem("theme", body.classList.contains("dark-theme") ? "dark" : "light");
@@ -105,7 +98,7 @@
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/api/users") // Или другой API, где можно получить ID текущего пользователя
+            fetch("/api/users")
                 .then(response => response.json())
                 .then(users => {
                     let currentUser = users.find(u => u.username === "{{ current_user.username }}");

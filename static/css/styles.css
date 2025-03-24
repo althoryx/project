@@ -1,4 +1,3 @@
-/* Общие стили для страниц */
 html, body {
     height: 100%;
     min-height: 100vh;
@@ -15,19 +14,16 @@ html, body {
     color: #ffffff;
 }
 
-/* Главный контент */
 .dark-mode main {
     background: #1e1e1e;
     color: #ffffff;
 }
 
-/* Футер */
 .dark-mode footer {
     background-color: #222;
     color: #ddd;
 }
 
-/* Кнопки */
 .dark-mode .btn {
     background-color: #444;
 }
@@ -36,8 +32,6 @@ html, body {
     background-color: #666;
 }
 
-
-/* Навигация */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -63,7 +57,6 @@ html, body {
     text-decoration: underline;
 }
 
-/* Контент */
 main {
     flex: 1;
     padding: 20px;
@@ -76,7 +69,6 @@ main {
     border-radius: 8px;
 }
 
-/* Кнопки */
 .btn {
     display: inline-block;
     padding: 10px 15px;
@@ -100,7 +92,6 @@ main {
     background-color: #545b62;
 }
 
-/* Формы */
 input, textarea {
     width: 100%;
     padding: 10px;
@@ -109,7 +100,6 @@ input, textarea {
     border-radius: 5px;
 }
 
-/* Футер */
 footer {
     text-align: center;
     padding: 10px;
@@ -149,7 +139,6 @@ footer {
     margin-top: 10px;
 }
 
-/* Стили для аватарки и кнопки изменения */
 .avatar-label {
     position: relative;
     display: inline-block;
@@ -207,17 +196,17 @@ footer {
 .profile-container {
     display: flex;
     align-items: center;
-    gap: 15px; /* Отступ между аватаркой и личной инфой */
-    flex-shrink: 0; /* Аватарка не сжимается */
+    gap: 15px;
+    flex-shrink: 0;
 }
 
 .user-info {
-    display: none; /* Скрываем личную информацию по умолчанию */
+    display: none;
     margin-top: 10px;
 }
 
 .user-info.active {
-    display: block; /* Показываем при активации */
+    display: block;
 }
 
 .avatar-wrapper {
@@ -228,12 +217,12 @@ footer {
 .profile-main {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Выравниваем текст по левому краю */
-    flex-grow: 1; /* Растягиваем основную часть */
+    align-items: flex-start;
+    flex-grow: 1;
 }
 
 .avatar-container {
-    flex-shrink: 0; /* Запрещаем аватарке сжиматься */
+    flex-shrink: 0;
 }
 
 .info-toggle {
@@ -249,7 +238,7 @@ footer {
 .profile-info {
     display: none;
     position: absolute;
-    top: 50px; /* Отступ от имени */
+    top: 50px;
     left: 0;
     background: white;
     border-radius: 8px;
@@ -285,7 +274,7 @@ footer {
 }
 
 .modal {
-    display: none; /* Скрываем по умолчанию */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -303,19 +292,17 @@ footer {
     color: black;
     padding: 20px;
     border-radius: 10px;
-    width: 300px; /* Фиксированная ширина */
+    width: 300px;
     max-width: 90%;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     text-align: center;
 }
 
-/* Стили для тёмной темы */
 .dark-mode .modal-content {
     background: #222;
     color: white;
 }
 
-/* Кнопка закрытия */
 .modal .close {
     position: absolute;
     top: 10px;
@@ -449,7 +436,7 @@ body.dark-theme {
 .comment-btn:hover {
     background-color: #0056b3;
 }
-/* Светлая тема (по умолчанию) */
+
 html, body {
     height: 100%;
     min-height: 100vh;
@@ -462,7 +449,6 @@ html, body {
     flex-direction: column;
 }
 
-/* Контейнеры */
 .profile, .new-post, .feed, main {
     background-color: white;
     padding: 15px;
@@ -470,7 +456,6 @@ html, body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Футер */
 footer {
     background-color: #fff;
     color: #555;
@@ -481,7 +466,6 @@ footer {
     width: 100%;
 }
 
-/* Навигация */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -491,7 +475,6 @@ footer {
     color: white;
 }
 
-/* Кнопки */
 .btn {
     display: inline-block;
     padding: 10px 15px;
@@ -515,7 +498,6 @@ footer {
     background-color: #545b62;
 }
 
-/* Формы */
 input, textarea {
     width: 100%;
     padding: 10px;
@@ -526,7 +508,6 @@ input, textarea {
     color: #000;
 }
 
-/* Посты */
 .post {
     border: 1px solid #ddd;
     padding: 10px;
@@ -551,7 +532,6 @@ input, textarea {
     margin-bottom: 5px;
 }
 
-/* Темная тема */
 .dark-mode {
     background-color: #121212;
     color: #ffffff;
@@ -578,7 +558,6 @@ input, textarea {
     color: #ddd;
 }
 
-/* Кнопки */
 .dark-mode .btn {
     background-color: #444;
 }
@@ -594,7 +573,6 @@ input, textarea {
     border: 1px solid #555;
 }
 
-/* Комментарии */
 .dark-mode .comment {
     background-color: #2a2a2a;
 }
@@ -603,12 +581,10 @@ input, textarea {
     color: #ddd;
 }
 
-/* Навигация */
 .dark-mode .navbar {
     background-color: #333;
 }
 
-/* Модальные окна */
 .modal {
     background-color: rgba(0, 0, 0, 0.5);
 }
@@ -625,7 +601,6 @@ input, textarea {
     color: white;
 }
 
-/* Общие стили для всех кнопок */
 button {
     background: none;
     border: none;
@@ -650,7 +625,6 @@ button:hover {
     color: #125ab6;
 }
 
-/* Кнопка комментариев */
 .comment-toggle {
     background-color: #007BFF;
     color: white;
@@ -661,7 +635,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Кнопка удаления поста и комментария */
 .delete-post, .delete-comment {
     color: red;
 }
@@ -670,7 +643,6 @@ button:hover {
     color: darkred;
 }
 
-/* Темная тема */
 .dark-mode button {
     color: #bbb;
 }
@@ -814,7 +786,6 @@ button:hover {
     float: right;
 }
 
-/* Стили сообщений */
 .message-box {
     display: none;
     padding: 10px;
@@ -824,7 +795,6 @@ button:hover {
     font-weight: bold;
 }
 
-/* Светлая тема */
 .message-box {
     background: lightgreen;
     color: black;
@@ -835,18 +805,16 @@ button:hover {
     color: darkred;
 }
 
-/* Тёмная тема */
 .dark-mode .message-box {
-    background: #1b5e20; /* Тёмно-зелёный */
-    color: #d4edda; /* Светло-зелёный текст */
+    background: #1b5e20;
+    color: #d4edda;
 }
 
 .dark-mode .message-box.error {
-    background: #8b0000; /* Тёмно-красный */
-    color: #f8d7da; /* Светло-красный текст */
+    background: #8b0000;
+    color: #f8d7da;
 }
 
-/* === Стили для модального окна друзей === */
 .friends-modal {
     display: none;
     position: fixed;
@@ -884,7 +852,6 @@ button:hover {
     color: #000;
 }
 
-/* Контейнер списка друзей */
 .friends-modal-list {
     max-height: 300px;
     overflow-y: auto;
@@ -892,7 +859,6 @@ button:hover {
     padding-right: 5px;
 }
 
-/* Карточка друга */
 .friends-modal-item {
     display: flex;
     align-items: center;
@@ -934,15 +900,13 @@ button:hover {
     }
 }
 
-/* Улучшенные стили для адаптивного отображения сообщений */
-
 .messages {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     padding: 10px;
     flex-grow: 1;
-    max-height: calc(100vh - 200px); /* Автоматическая подстройка высоты */
+    max-height: calc(100vh - 200px);
     box-sizing: border-box;
 }
 
@@ -1064,7 +1028,7 @@ button:hover {
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    white-space: nowrap; /* Чтобы текст в кнопке не переносился */
+    white-space: nowrap;
 }
 
 .message-input button:hover {
@@ -1089,7 +1053,6 @@ button:hover {
     color: #000;
 }
 
-/* Стили для тёмной темы */
 .dark-mode .chat-container {
     border-color: #444;
 }
@@ -1153,7 +1116,7 @@ button:hover {
     width: 200px;
     max-height: 300px;
     overflow-y: auto;
-    display: none; /* Меняем с hidden на display: none */
+    display: none;
 }
 
 .chat-dropdown li {
@@ -1168,5 +1131,5 @@ button:hover {
 }
 
 .show {
-    display: block; /* Новый класс для показа списка */
+    display: block;
 }
